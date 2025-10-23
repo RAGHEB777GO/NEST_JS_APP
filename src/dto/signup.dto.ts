@@ -1,0 +1,8 @@
+import { IsEmail, IsString, MinLength } from 'class-validator';
+
+export class SignupDto {
+  name!: string;
+  email!: string;
+  password!: string;
+}
+
