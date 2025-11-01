@@ -13,7 +13,12 @@ export class UserService {
 
   async createUser(name: string, email: string, password: string): Promise<User> {
     const hashed = await bcrypt.hash(password, 10);
-    const createdUser = new this.userModel({ name, email, password: hashed });
+    const createdUser = new this.userModel({
+      name,
+      email,
+      password: hashed,
+      isEmailConfirmed: false,
+    });
     return createdUser.save();
   }
 
@@ -29,8 +34,10 @@ export class UserService {
     const user = await this.findByEmail(email);
     if (!user) return null;
 
-    (user as any).isEmailConfirmed = true; 
-    return (user as any).save();
+    user.isEmailConfirmed = true;
+    await user.save();
+
+    return user;
   }
 
   async updateUserPassword(email: string, newPassword: string): Promise<User | null> {
@@ -38,7 +45,14 @@ export class UserService {
     if (!user) return null;
 
     const hashed = await bcrypt.hash(newPassword, 10);
-    (user as any).password = hashed;
-    return (user as any).save();
+    user.password = hashed;
+    await user.save();
+
+    return user;
+  }
+
+  // 🆕 هنا الدالة الجديدة اللي كانت ناقصة
+  async findAll(): Promise<User[]> {
+    return this.userModel.find().select('-password').exec();
   }
 }

@@ -1,10 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { Role } from '../auth/roles.enum';
 
 @Schema()
 export class User extends Document {
   @Prop({ required: true })
-  name!: string; // ✅ أضفنا "!"
+  name!: string;
 
   @Prop({ required: true, unique: true })
   email!: string;
@@ -15,7 +16,12 @@ export class User extends Document {
   @Prop({ default: false })
   isEmailConfirmed!: boolean;
 
-  @Prop()
+  
+  @Prop({ type: String, enum: Role, default: Role.User })
+  role!: Role;
+
+  
+  @Prop({ required: false })
   googleId?: string;
 }
 
